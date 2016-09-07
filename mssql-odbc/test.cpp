@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 #include <Windows.h>
 
@@ -10,6 +11,9 @@
 void HandleDiagnosticRecord(SQLHANDLE      hHandle,
 	SQLSMALLINT    hType,
 	RETCODE        RetCode);
+
+std::string convCharT(const std::wstring & wstr);
+std::wstring convCharT(const std::string & str);
 
 int main()
 {
@@ -134,4 +138,14 @@ void HandleDiagnosticRecord(SQLHANDLE      hHandle,
 			fwprintf(stderr, L"[%5.5s] %s (%d)\n", wszState, wszMessage, iError);
 		}
 	}
+}
+
+std::string convCharT(const std::wstring & wstr)
+{
+	return std::string(wstr.cbegin(), wstr.cend());
+}
+
+std::wstring convCharT(const std::string & str)
+{
+	return std::wstring(str.cbegin(), str.cend());
 }
