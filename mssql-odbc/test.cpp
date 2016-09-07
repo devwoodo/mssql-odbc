@@ -1,6 +1,8 @@
 #include <iostream>
 
 #include <Windows.h>
+#include <afxdb.h>
+#include <cstring>
 
 // Required header:
 #include <sql.h>
@@ -13,6 +15,28 @@ void HandleDiagnosticRecord(SQLHANDLE      hHandle,
 
 int main()
 {
+	CDatabase db;
+	//if (db.OpenEx(CString("sqlODBC")) == 0)
+	if (db.OpenEx(_T("sqlODBC")) == 0)
+	{
+		std::cout << "Database open error." << std::endl;
+		exit(1);
+	}
+
+	CRecordset rSet(&db);
+
+	db.ExecuteSQL(_T("select * from tb1"));
+
+	if(rSet.Open()==0)
+	{
+		std::cout << "Recordset open error." << std::endl;
+		exit(1);
+	}
+
+
+	db.Close();
+
+	/////////////////////////////////////////////////////////////////////////////////////
 	SQLHENV hEnv;
 	SQLHDBC hDbc;
 	SQLHSTMT hStmt;
