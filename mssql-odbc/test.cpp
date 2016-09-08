@@ -11,6 +11,8 @@ void HandleDiagnosticRecord(SQLHANDLE      hHandle,
 	SQLSMALLINT    hType,
 	RETCODE        RetCode);
 
+RETCODE getResultNum(SQLHSTMT hStmt, int & number);
+
 int main()
 {
 	SQLHENV hEnv;
@@ -63,7 +65,7 @@ int main()
 	
 	// case1
 	RETCODE RetCode = SQLExecDirect(hStmt, L"SELECT * FROM tb1", SQL_NTS);	// 성공 시 SQL_SUCCESS 반환
-
+	int num = 0;
 	switch (RetCode)
 	{
 	case SQL_SUCCESS_WITH_INFO:
@@ -72,11 +74,7 @@ int main()
 		// fall through
 	case SQL_SUCCESS:
 		std::cout << "SQLExecDirect(..) success!" << std::endl;
-
-		int num = 0;
-		while (SQLFetch(hStmt)) {
-			num++;
-		}
+		getResultNum(hStmt, num);
 		std::cout << "num: " << num << std::endl;
 		break;
 	case SQL_ERROR:
@@ -86,13 +84,13 @@ int main()
 	default:
 		fwprintf(stderr, L"Unexpected return code %hd!\n", RetCode);
 	}
-	SQLCloseCursor(hStmt);
+	//SQLCloseCursor(hStmt);
 
 
 
 	// case2
 	RetCode = SQLExecDirect(hStmt, L"INSERT tb1 VALUES ('f', '6789')", SQL_NTS);	// 성공 시 SQL_SUCCESS 반환
-
+	num = 0;
 	switch (RetCode)
 	{
 	case SQL_SUCCESS_WITH_INFO:
@@ -155,4 +153,17 @@ void HandleDiagnosticRecord(SQLHANDLE      hHandle,
 			fwprintf(stderr, L"[%5.5s] %s (%d)\n", wszState, wszMessage, iError);
 		}
 	}
+}
+
+RETCODE getResultNum(SQLHSTMT hStmt, int & number)
+{
+	RETCODE rtnCode;
+
+	if ((rtnCode = SQLFetch(hStmt)) == SQL_SUCCESS)
+	{
+		number = 1;
+		while (SQLFetch(hStmt) == SQL_SUCCESS)
+			number++;
+	}
+	return rtnCode;
 }
