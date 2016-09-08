@@ -84,7 +84,7 @@ int main()
 	default:
 		fwprintf(stderr, L"Unexpected return code %hd!\n", RetCode);
 	}
-	//SQLCloseCursor(hStmt);
+	SQLCloseCursor(hStmt);
 
 
 
