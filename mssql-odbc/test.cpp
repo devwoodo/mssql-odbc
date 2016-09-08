@@ -73,8 +73,10 @@ int main()
 	case SQL_SUCCESS:
 		std::cout << "SQLExecDirect(..) success!" << std::endl;
 
-		SQLLEN num;
-		std::cout << "SQLRowCount: " << SQLRowCount(hStmt, &num) << std::endl;
+		int num = 0;
+		while (SQLFetch(hStmt)) {
+			num++;
+		}
 		std::cout << "num: " << num << std::endl;
 		break;
 	case SQL_ERROR:
