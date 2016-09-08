@@ -60,40 +60,58 @@ int main()
 	}
 
 	SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
-	//RETCODE RetCode = SQLExecDirect(hStmt, (SQLWCHAR*)stmt, SQL_NTS);		// error 42000: systax error  (stmt should be given in wchar(L"~") type.)
-	//RETCODE RetCode = SQLExecDirect(hStmt, stmt, SQL_NTS);	// ok	(stmt type changed to wchar(L"~") type.)
-	RETCODE RetCode = SQLExecDirect(hStmt, L"SELECT * FROM tb1", SQL_NTS);	// ok
-	// 성공 시 SQL_SUCCESS 반환
+	
+	// case1
+	RETCODE RetCode = SQLExecDirect(hStmt, L"SELECT * FROM tb1", SQL_NTS);	// 성공 시 SQL_SUCCESS 반환
 
 	switch (RetCode)
 	{
 	case SQL_SUCCESS_WITH_INFO:
-	{
 		std::cout << "SQL_SUCCESS_WITH_INFO" << std::endl;
 		HandleDiagnosticRecord(hStmt, SQL_HANDLE_STMT, RetCode);
 		// fall through
-	}
 	case SQL_SUCCESS:
-	{
 		std::cout << "SQLExecDirect(..) success!" << std::endl;
 
 		SQLSMALLINT num;
 		std::cout << "SQLNumResultCols: " << SQLNumResultCols(hStmt, &num) << std::endl;
 		std::cout << "num: " << num << std::endl;
 		break;
-	}
-
 	case SQL_ERROR:
-	{
 		std::cout << "SQL_ERROR" << std::endl;
 		HandleDiagnosticRecord(hStmt, SQL_HANDLE_STMT, RetCode);
 		break;
-	}
-
 	default:
 		fwprintf(stderr, L"Unexpected return code %hd!\n", RetCode);
-
 	}
+
+
+
+	// case2
+	RETCODE RetCode = SQLExecDirect(hStmt, L"INSERT tb1 VALUES ('e', '5678')", SQL_NTS);	// 성공 시 SQL_SUCCESS 반환
+
+	switch (RetCode)
+	{
+	case SQL_SUCCESS_WITH_INFO:
+		std::cout << "SQL_SUCCESS_WITH_INFO" << std::endl;
+		HandleDiagnosticRecord(hStmt, SQL_HANDLE_STMT, RetCode);
+		// fall through
+	case SQL_SUCCESS:
+		std::cout << "SQLExecDirect(..) success!" << std::endl;
+
+		SQLSMALLINT num;
+		std::cout << "SQLNumResultCols: " << SQLNumResultCols(hStmt, &num) << std::endl;
+		std::cout << "num: " << num << std::endl;
+		break;
+	case SQL_ERROR:
+		std::cout << "SQL_ERROR" << std::endl;
+		HandleDiagnosticRecord(hStmt, SQL_HANDLE_STMT, RetCode);
+		break;
+	default:
+		fwprintf(stderr, L"Unexpected return code %hd!\n", RetCode);
+	}
+
+
 
 	SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
 	SQLFreeHandle(SQL_HANDLE_DBC, hDbc);
