@@ -74,7 +74,7 @@ int main()
 		std::cout << "SQLExecDirect(..) success!" << std::endl;
 
 		SQLLEN num;
-		std::cout << "SQLNumResultCols: " << SQLRowCount(hStmt, &num) << std::endl;
+		std::cout << "SQLRowCount: " << SQLRowCount(hStmt, &num) << std::endl;
 		std::cout << "num: " << num << std::endl;
 		break;
 	case SQL_ERROR:
@@ -89,7 +89,7 @@ int main()
 
 
 	// case2
-	RETCODE RetCode = SQLExecDirect(hStmt, L"INSERT tb1 VALUES ('e', '5678')", SQL_NTS);	// 성공 시 SQL_SUCCESS 반환
+	RetCode = SQLExecDirect(hStmt, L"INSERT tb1 VALUES ('f', '6789')", SQL_NTS);	// 성공 시 SQL_SUCCESS 반환
 
 	switch (RetCode)
 	{
@@ -100,8 +100,8 @@ int main()
 	case SQL_SUCCESS:
 		std::cout << "SQLExecDirect(..) success!" << std::endl;
 
-		SQLSMALLINT num;
-		std::cout << "SQLNumResultCols: " << SQLNumResultCols(hStmt, &num) << std::endl;
+		SQLLEN num;
+		std::cout << "SQLRowCount: " << SQLRowCount(hStmt, &num) << std::endl;
 		std::cout << "num: " << num << std::endl;
 		break;
 	case SQL_ERROR:
