@@ -73,8 +73,8 @@ int main()
 	case SQL_SUCCESS:
 		std::cout << "SQLExecDirect(..) success!" << std::endl;
 
-		SQLSMALLINT num;
-		std::cout << "SQLNumResultCols: " << SQLNumResultCols(hStmt, &num) << std::endl;
+		SQLLEN num;
+		std::cout << "SQLNumResultCols: " << SQLRowCount(hStmt, &num) << std::endl;
 		std::cout << "num: " << num << std::endl;
 		break;
 	case SQL_ERROR:
@@ -84,6 +84,7 @@ int main()
 	default:
 		fwprintf(stderr, L"Unexpected return code %hd!\n", RetCode);
 	}
+	SQLCloseCursor(hStmt);
 
 
 
