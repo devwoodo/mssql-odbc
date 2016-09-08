@@ -10,6 +10,12 @@
 #include <sqltypes.h>
 #include <sqlext.h>
 
+
+
+/************************************************************************************
+ * etc. Function
+
+************************************************************************************/
 void HandleDiagnosticRecord(SQLHANDLE      hHandle,
 	SQLSMALLINT    hType,
 	RETCODE        RetCode);
@@ -17,6 +23,13 @@ void HandleDiagnosticRecord(SQLHANDLE      hHandle,
 std::string convCharT(const std::wstring & wstr);
 std::wstring convCharT(const std::string & str);
 
+
+
+/************************************************************************************
+ * DBConnector class
+	- 
+
+************************************************************************************/
 typedef struct DBConnector
 {
 public:
@@ -28,6 +41,7 @@ public:
 	void close();
 	RETCODE excute(const std::string & stmt);
 	//void getResultSet();	//rev result set ÀÚ·áÇü..?
+	RETCODE getResultNum(SQLSMALLINT & number);
 
 	// accessor
 	SQLHENV hEnv() const;

@@ -1,5 +1,11 @@
 #include "test-header.h"
 
+
+
+/************************************************************************************
+ * etc. Function definition.
+
+************************************************************************************/
 void HandleDiagnosticRecord(SQLHANDLE      hHandle,
 	SQLSMALLINT    hType,
 	RETCODE        RetCode)
@@ -41,6 +47,12 @@ std::wstring convCharT(const std::string & str)
 	return std::wstring(str.cbegin(), str.cend());
 }
 
+
+
+/************************************************************************************
+ * DBConnector class definition.
+
+************************************************************************************/
 DBConnector::DBConnector(const std::string dsnName)
 	: /*DBConnector(),*/	//? 왜 안돼지?
 	_dsnName(dsnName.cbegin(), dsnName.cend())
@@ -48,7 +60,6 @@ DBConnector::DBConnector(const std::string dsnName)
 	//rev DB connecting process..
 	_init();	//rev
 }
-
 DBConnector::~DBConnector()
 {
 	if (_connectionFlag == true)
@@ -59,7 +70,6 @@ DBConnector::~DBConnector()
 	std::cout << "~DBConnector()" << std::endl;
 	//rev _closeFlag==true 일 때 처리..?
 }
-
 RETCODE DBConnector::connect()
 {
 	std::wstring id, pw;
@@ -120,7 +130,6 @@ RETCODE DBConnector::connect()
 
 	return errmsg;
 }
-
 void DBConnector::close()
 {
 	try {
@@ -134,41 +143,38 @@ void DBConnector::close()
 	}
 	_connectionFlag = false;
 }
-
 RETCODE DBConnector::excute(const std::string & stmt)
 {
 	std::wstring wstr(stmt.cbegin(), stmt.cend());
 
 	SQLAllocHandle(SQL_HANDLE_STMT, _hDbc, &_hStmt);
-	//RETCODE RetCode = SQLExecDirect(hStmt, (SQLWCHAR*)stmt, SQL_NTS);		// error 42000: systax error  (stmt should be given in wchar(L"~") type.)
-	//RETCODE RetCode = SQLExecDirect(hStmt, stmt, SQL_NTS);	// ok	(stmt type changed to wchar(L"~") type.)
+	
 	RETCODE RetCode = SQLExecDirect(_hStmt, const_cast<wchar_t *>(wstr.c_str()), SQL_NTS);	// ok
 																			// 성공 시 SQL_SUCCESS 반환
 
-	switch (RetCode)
-	{
-	case SQL_SUCCESS_WITH_INFO:
-		std::cout << "SQL_SUCCESS_WITH_INFO" << std::endl;
-		HandleDiagnosticRecord(_hStmt, SQL_HANDLE_STMT, RetCode);
-		// fall through
-	case SQL_SUCCESS:
-		std::cout << "SQLExecDirect(..) success!" << std::endl;
-
-		SQLSMALLINT num;
-		std::cout << "SQLNumResultCols: " << SQLNumResultCols(_hStmt, &num) << std::endl;
-		std::cout << "num: " << num << std::endl;
-		break;
-	case SQL_ERROR:
-		std::cout << "SQL_ERROR" << std::endl;
-		HandleDiagnosticRecord(_hStmt, SQL_HANDLE_STMT, RetCode);
-		break;
-	default:
-		fwprintf(stderr, L"Unexpected return code %hd!\n", RetCode);
-	}
+	//switch (RetCode)
+	//{
+	//case SQL_SUCCESS_WITH_INFO:
+	//	std::cout << "SQL_SUCCESS_WITH_INFO" << std::endl;
+	//	HandleDiagnosticRecord(_hStmt, SQL_HANDLE_STMT, RetCode);
+	//	// fall through
+	//case SQL_SUCCESS:
+	//	std::cout << "SQLExecDirect(..) success!" << std::endl;
+	//	break;
+	//case SQL_ERROR:
+	//	std::cout << "SQL_ERROR" << std::endl;
+	//	HandleDiagnosticRecord(_hStmt, SQL_HANDLE_STMT, RetCode);
+	//	break;
+	//default:
+	//	fwprintf(stderr, L"Unexpected return code %hd!\n", RetCode);
+	//}
 
 	return RetCode;
 }
-
+RETCODE DBConnector::getResultNum(SQLSMALLINT & number)
+{
+	return SQLNumResultCols(_hStmt, &number);
+}
 SQLHENV DBConnector::hEnv() const
 {
 	return _hEnv;
@@ -183,7 +189,6 @@ SQLHSTMT DBConnector::hStmt() const
 }
 DBConnector::DBConnector() : _connectionFlag(false)
 {
-	// left blank intentionally
 	_init();
 }
 void DBConnector::_init()
